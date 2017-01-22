@@ -1,0 +1,15 @@
+nginx=1.10.2
+openssl=1.0.2j
+pcre=8.39
+zlib=1.2.11
+echo=0.60
+modsecurity=2.9.1
+xss-nginx=0.05
+headers-more-nginx=0.32
+testcookie-nginx=0
+http-auth-pam-nginx=1.5.1
+http-auth-digest-nginx=null
+cache-purge-nginx=2.3
+md5-filter-nginx=null
+http-internal-redirect-nginx=0.6
+http-accounting-nginx=1.0
