@@ -225,6 +225,10 @@ script_nginx_installing()
 		fi
 	fi
 
+	## Create vhost directory and copy vhost default
+	mkdir -p /etc/nginx/vhost/
+	cp -rf ${SCRIPT_ETC_DIR}/vhost/* /etc/nginx/vhost/
+
 }
 
 
