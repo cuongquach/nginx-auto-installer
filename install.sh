@@ -175,7 +175,7 @@ script_nginx_installing()
 	###
 
 	## Create directory for nginx loging and cache
-	mkdir -p /var/log/nginx/
+	mkdir -p /var/log/nginx/domains/
 	mkdir -p /var/cache/nginx/
 
 	if [ ! -d ${SCRIPT_COMPILING_DIR} ];then
@@ -226,8 +226,13 @@ script_nginx_installing()
 	fi
 
 	## Create vhost directory and copy vhost default
-	mkdir -p /etc/nginx/vhost/
+	mkdir -p /etc/nginx/{vhost,ssl}
 	cp -rf ${SCRIPT_ETC_DIR}/vhost/* /etc/nginx/vhost/
+
+	## Generate DH pem
+	openssl dhparam -out /etc/nginx/dhparam.pem 2048 \
+					&& echo "SUCCESS.GENERATE_DH_PEM : 2048 bit" | tee -a "${SCRIPT_LOG_REPORT}" \
+					|| echo "FAILED.GENERATE_DH_PEM : 2048 bit" | tee -a "${SCRIPT_LOG_REPORT}"
 
 }
 
