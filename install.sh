@@ -51,7 +51,6 @@ cat <<-'EOF' >> ${SCRIPT_CUSTOM_NGINX_CONFIG}
         --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp \
         --http-scgi-temp-path=/var/cache/nginx/scgi_temp \
         --with-file-aio \
-        --with-ipv6 \
         --with-http_gzip_static_module \
         --with-http_stub_status_module \
         --with-http_ssl_module \
