@@ -1,0 +1,132 @@
+# Redirect HTTP -> HTTPS
+server
+{
+    listen 192.168.100.100:80;
+    server_name domain.com www.domain.com ;
+    access_log /var/log/nginx/domains/domain.com.log main;
+    access_log /var/log/nginx/domains/domain.com.bytes bytes;
+    error_log /var/log/nginx/vhost_error.log;
+    root /home/cuongqc/public_html;
+    index index.php index.html index.htm;
+    return 301 https://$host$request_uri;
+}
+
+# Main configuration for HTTPS Site
+# Configuration is avaiable only for Wordpress Site
+server
+{
+    listen 192.168.100.100:443 ssl http2;
+    server_name www.domain.com ;
+    access_log /var/log/nginx/domains/www.domain.com.log main;
+    access_log /var/log/nginx/domains/www.domain.com.bytes bytes;
+    error_log /var/log/nginx/vhost_error.log;
+    #root /home/cuongqc/public_html;
+    index index.php index.html index.htm;
+
+    ssl on;
+    ssl_certificate /etc/nginx/ssl/domain.com/domain.com.cert;
+    ssl_certificate_key /etc/nginx/ssl/domain.com/domain.com.key;
+    ssl_session_cache   shared:SSL:10m;
+    ssl_session_timeout 5m;
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+    ssl_ciphers 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!3DES:!MD5:!PSK';
+    ssl_prefer_server_ciphers on;
+
+    # HSTS (ngx_http_headers required) - 6 months
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+
+    # OCSP Stapling Settings
+    ssl_stapling on;
+    ssl_stapling_verify on;
+    ssl_trusted_certificate /etc/nginx/ssl/domain.com/domain.com.cert;
+
+    ###############################
+    # Security Configuration Part #
+    ###############################
+
+    if ($http_user_agent = "") { return 403; }
+    if ($request_uri ~* (UPGRADE|README|LICENSE|INSTALL|COPYRIGHT|CHANGELOG|MAINTAINERS).txt$) {
+        return 403;
+    }
+    if ($query_string ~* "\=PHP[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}") {
+        return 403;
+    }
+    if ($request_method !~ ^(GET|HEAD|POST|PUT|DELETE)$ ) {
+        return 405;
+    }
+
+    ## Block SQL injections
+    location ~* union.*select.*\( { deny all; }
+    location ~* union.*all.*select.* { deny all; }
+    location ~* concat.*\( { deny all; }
+
+    ## Block common exploits
+    location ~* (<|%3C).*script.*(>|%3E) { deny all; }
+    location ~* base64_(en|de)code\(.*\) { deny all; }
+    location ~* (%24&x) { deny all; }
+    location ~* (%0|%A|%B|%C|%D|%E|%F|127\.0) { deny all; }
+    location ~* \.\.\/  { deny all; }
+    location ~* ~$ { deny all; }
+    location ~* proc/self/environ { deny all; }
+    location ~* /\.(htaccess|htpasswd|svn) { deny all; }
+
+    ## Block file injections
+    location ~* [a-zA-Z0-9_]=(\.\.//?)+ { deny all; }
+    location ~* [a-zA-Z0-9_]=/([a-z0-9_.]//?)+ { deny all; }
+    location = /xmlrpc.php { return 403; }
+
+    ## Block malicious resouces in wordpress site
+    location = /robots.txt  { allow all; access_log off; log_not_found off; }
+    location = /favicon.ico { allow all; access_log off; log_not_found off; }
+    location ~*.*\.(ppt|pptx|eot|svg|woff|woff2|rtf|ttf|otf|3gp|gif|jpg|jpeg|png|ico|wmv|avi|asf|asx|mpg|mpeg|mp4|pls|mp3|mid|wav|swf|flv|txt|js|css|exe|zip|tar|rar|gz|tgz|bz2|uha|7z|doc|docx|xls|xlsx|pdf|iso)$ {
+        access_log off;
+        log_not_found off;
+        expires 30d;
+        add_header Pragma public;
+        add_header Cache-Control "max-age=31536000, public";
+        try_files $uri @proxy;
+    }
+    location ~* \.(inc|engine|install|info|module|sh|sql|theme|tpl\.php|xtmpl|Entries|Repository|Root|jar|java|class|action|py)$ {
+        deny all;
+    }
+    location ~* ^/wp-content/uploads/.*.(php|phps|php4|php5|cgi|pl|php3|html|htm|js|xml)$ { deny all; }
+    location ~* ^/wp-content/themes/.*/(js|font|fonts|images|languages)/.*\.(php|phps)$ { deny all; }
+    location ~* /wp-admin/css/.*\.(php|html|htm|js|xml|php4|php5|cgi|pl|php3)$ { deny all; }
+    location = /(xmlrpc|wp-config|wp-cron).php$ { deny all; access_log off; log_not_found off; }
+    location ~*.*\.(py|PY|pY|Py|pl|pL|Pl|PL|sh|sH|Sh)$ { return 403; log_not_found off; }
+    location ~*.*\.(cgi|cgI|cGi|cGI|Cgi|CgI|CGi|CGI)$ { return 403; log_not_found off; }
+    location ~ /\.ht { return 403; log_not_found off; }
+    location ^~ /.bzr { return 403; log_not_found off; }
+    location ^~ /.git { return 403; log_not_found off; }
+    location ^~ /.hg { return 403; log_not_found off; }
+
+    ## Main Configuration for proxy backend - PHP-FPM
+    #location /en/ {
+    #    try_files $uri $uri/ /en/index.php?$args;
+    #}
+
+    location / {
+        try_files $uri $uri.html $uri/ /index.php?$args;
+    }
+
+    location ~ \.php$ {
+        fastcgi_pass   unix:/usr/bin/php7/var/run/php-fpm-domain.sock;
+        if (!-f $realpath_root$fastcgi_script_name) {
+               return 404;
+        }
+        fastcgi_index  index.php;
+        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+        include fastcgi_params;
+        include fastcgi_proxy.conf;
+    }
+    location @proxy {
+        internal;
+        fastcgi_pass   unix:/usr/bin/php7/var/run/php-fpm-domain.sock;
+        if (!-f $realpath_root$fastcgi_script_name) {
+               return 404;
+        }
+        fastcgi_index  index.php;
+        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+        include        fastcgi_params;
+    }
+}
