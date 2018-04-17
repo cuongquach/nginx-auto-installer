@@ -163,6 +163,12 @@ script_modules_custom_decompress()
 
 script_nginx_installing()
 {
+    ## Calculate core cpu for compile speed
+    number_cpu_core="$(cat /proc/cpuinfo  | grep -i "^processor" | wc -l)"
+    if [[ -z "${number_cpu_core}" ]] || [[ "${number_cpu_core}" == " " ]];then
+        number_cpu_core="1"
+    fi
+
     ## Create user nginx
     if [[ ! $(cat /etc/passwd | grep -i "nginx") ]];then
         groupadd -r nginx 
@@ -184,16 +190,16 @@ script_nginx_installing()
 
     if [ -f ${SCRIPT_CUSTOM_NGINX_CONFIG} ];then
             cd ${SCRIPT_COMPILING_DIR}
-            bash ${SCRIPT_CUSTOM_NGINX_CONFIG} 
-            make
-            make install \
+            bash ${SCRIPT_CUSTOM_NGINX_CONFIG}
+            make -j ${number_cpu_core}
+            make install -j ${number_cpu_core} \
                     && echo "SUCCESS.COMPILING_NGINX : nginx" | tee -a "${SCRIPT_LOG_REPORT}" \
                     || echo "FAILED.COMPILING_NGINX : nginx" | tee -a "${SCRIPT_LOG_REPORT}"
     else
             cd ${SCRIPT_COMPILING_DIR}
             bash ${SCRIPT_NGINX_COMPILING}
-            make
-            make install\
+            make -j ${number_cpu_core}
+            make install -j ${number_cpu_core} \
                     && echo "SUCCESS.COMPILING_NGINX : nginx" | tee -a "${SCRIPT_LOG_REPORT}" \
                     || echo "FAILED.COMPILING_NGINX : nginx" | tee -a "${SCRIPT_LOG_REPORT}"
     fi

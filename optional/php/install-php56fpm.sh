@@ -18,9 +18,15 @@ tar xvf php-5.6.32.tar.gz -C /opt/php56/ --strip-components 1 1> /dev/null
 
 # Begin compile PHP7
 cd /opt/php56/
-./configure --prefix=/usr/bin/php56 --exec-prefix=/usr/local/php56 --bindir=/usr/local/php56/usr/bin --sbindir=/usr/local/php56/usr/sbin --datadir=/usr/local/php56/usr/share --sysconfdir=/usr/local/php56/etc --with-config-file-scan-dir=/usr/local/php7/etc/php.d --mandir=/usr/local/php7/usr/share/man --includedir=/usr/local/php7/usr/include --libdir=/usr/local/php7/usr/lib64 --libexecdir=/usr/local/php7/usr/libexec --infodir=/usr/local/php7/usr/share/info --with-config-file-path=/usr/bin/php7/etc --with-pdo-pgsql --with-zlib-dir --with-freetype-dir --enable-mbstring --with-libxml-dir=/usr --enable-soap --enable-calendar --with-curl --with-mcrypt --with-zlib --with-gd --with-pgsql --disable-rpath --enable-inline-optimization --with-bz2 --with-zlib --enable-sockets --enable-sysvsem --enable-sysvshm --enable-pcntl --enable-mbregex --enable-exif --enable-bcmath --with-mhash --enable-zip --with-pcre-regex --with-pdo-mysql --with-mysqli --with-mysql-sock=/var/run/mysqld/mysqld.sock --with-jpeg-dir=/usr --with-png-dir=/usr --enable-gd-native-ttf --with-openssl --with-fpm-user=fpm --with-fpm-group=fpm --with-gettext --with-xmlrpc --with-xsl --enable-opcache --enable-fpm
+./configure --prefix=/usr/bin/php56 --exec-prefix=/usr/local/php56 --bindir=/usr/local/php56/usr/bin --sbindir=/usr/local/php56/usr/sbin --datadir=/usr/local/php56/usr/share --sysconfdir=/usr/local/php56/etc --with-config-file-scan-dir=/usr/local/php56/etc/php.d --mandir=/usr/local/php56/usr/share/man --includedir=/usr/local/php56/usr/include --libdir=/usr/local/php56/usr/lib64 --libexecdir=/usr/local/php56/usr/libexec --infodir=/usr/local/php56/usr/share/info --with-config-file-path=/usr/bin/php56/etc --with-pdo-pgsql --with-zlib-dir --with-freetype-dir --enable-mbstring --with-libxml-dir=/usr --enable-soap --enable-calendar --with-curl --with-mcrypt --with-zlib --with-gd --with-pgsql --disable-rpath --enable-inline-optimization --with-bz2 --with-zlib --enable-sockets --enable-sysvsem --enable-sysvshm --enable-pcntl --enable-mbregex --enable-exif --enable-bcmath --with-mhash --enable-zip --with-pcre-regex --with-pdo-mysql --with-mysqli --with-mysql-sock=/var/run/mysqld/mysqld.sock --with-jpeg-dir=/usr --with-png-dir=/usr --enable-gd-native-ttf --with-openssl --with-fpm-user=fpm --with-fpm-group=fpm --with-gettext --with-xmlrpc --with-xsl --enable-opcache --enable-fpm
 
-make && make install
+# Determine CPU Core
+CPU_CORE="$(cat /proc/cpuinfo  | grep -i "processor" | wc -l)"
+if [[ "${CPU_CORE}" == "0" || "${CPU_CORE}" == "1" ]];then
+    CPU_CORE="1"
+fi
+
+make -j ${CPU_CORE} && make install -j ${CPU_CORE}
 
 # Initial configuration
 mkdir -p /var/log/php-fpm/
@@ -35,8 +41,10 @@ cp -f /usr/local/php56/etc/php-fpm.conf.default /usr/local/php56/etc/php-fpm.con
 cp -f /usr/local/php56/etc/php-fpm.d/www.conf.default /usr/local/php56/etc/php-fpm.d/www.conf
 
 # Copy init start service PHP-FPM
+cp -f /opt/php56/sapi/fpm/php-fpm.service /etc/systemd/system/php-fpm.service
 cp -f /opt/php56/sapi/fpm/php-fpm.service /etc/systemd/system/php-fpm56.service
 chmod +x /etc/systemd/system/php-fpm.service
+chmod +x /etc/systemd/system/php-fpm56.service
 
 # Start php-fpm && set startup service
 systemctl enable php-fpm.service
