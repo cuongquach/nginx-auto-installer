@@ -1,11 +1,11 @@
-nginx=1.12.2
-openssl=1.0.2n
-pcre=8.41
+nginx=1.14.0
+openssl=1.0.2o
+pcre=8.42
 zlib=1.2.11
 echo=0.61
 modsecurity=2.9.1
-xss-nginx=0.05
-headers-more-nginx=0.32
+xss-nginx=0.06
+headers-more-nginx=0.33
 testcookie-nginx=0
 http-auth-pam-nginx=1.5.1
 http-auth-digest-nginx=null
