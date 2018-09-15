@@ -17,6 +17,11 @@
 	--http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp \
 	--http-scgi-temp-path=/var/cache/nginx/scgi_temp \
 	--with-file-aio \
+	--with-stream \
+	--with-stream_ssl_module \
+	--with-stream_access_module \
+	--with-stream_log_module \
+	--with-stream_proxy_module \
 	--with-http_gzip_static_module \
 	--with-http_stub_status_module \
 	--with-http_ssl_module \
