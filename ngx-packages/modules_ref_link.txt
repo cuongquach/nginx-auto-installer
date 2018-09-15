@@ -33,3 +33,6 @@ Link : https://github.com/flygoast/ngx_http_internal_redirect/
 
 + Nginx HTTP Accounting
 Link : https://github.com/Lax/ngx_http_accounting_module
+
++ nginx_upstream_check_module
+Link : https://github.com/yaoweibin/nginx_upstream_check_module
