@@ -13,4 +13,4 @@ cache-purge-nginx=2.3
 md5-filter-nginx=null
 http-internal-redirect-nginx=0.6
 http-accounting-nginx=1.0
-nginx-upstream-check-module=0.3.0
+upstream-check-module=0.3.0
