@@ -53,9 +53,6 @@ cat <<-'EOF' >> ${SCRIPT_CUSTOM_NGINX_CONFIG}
         --with-file-aio \
         --with-stream=dynamic \
         --with-stream_ssl_module \
-        --with-stream_access_module \
-        --with-stream_log_module \
-        --with-stream_proxy_module \
         --with-http_gzip_static_module \
         --with-http_stub_status_module \
         --with-http_ssl_module \
