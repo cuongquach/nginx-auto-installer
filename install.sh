@@ -51,6 +51,11 @@ cat <<-'EOF' >> ${SCRIPT_CUSTOM_NGINX_CONFIG}
         --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp \
         --http-scgi-temp-path=/var/cache/nginx/scgi_temp \
         --with-file-aio \
+        --with-stream=dynamic \
+        --with-stream_ssl_module \
+        --with-stream_access_module \
+        --with-stream_log_module \
+        --with-stream_proxy_module \
         --with-http_gzip_static_module \
         --with-http_stub_status_module \
         --with-http_ssl_module \
@@ -63,7 +68,8 @@ cat <<-'EOF' >> ${SCRIPT_CUSTOM_NGINX_CONFIG}
         --with-http_perl_module \
         --with-debug \
         --with-http_v2_module \
-        --with-cc-opt='-D FD_SETSIZE=32768' \
+        --with-cc-opt='-D FD_SETSIZE=32768 -g -O2 -march=westmere -flto -funsafe-math-optimizations -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2' \
+        --with-ld-opt='-Wl,-z,relro -Wl,--as-needed' \
         --without-http_uwsgi_module \
         --without-http_scgi_module \
         --without-mail_imap_module \
