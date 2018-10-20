@@ -65,7 +65,6 @@ cat <<-'EOF' >> ${SCRIPT_CUSTOM_NGINX_CONFIG}
         --with-http_perl_module \
         --with-debug \
         --with-http_v2_module \
-        --with-cc-opt='-D FD_SETSIZE=32768 -g -O2 -march=westmere -flto -funsafe-math-optimizations -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2' \
         --without-http_uwsgi_module \
         --without-http_scgi_module \
         --without-mail_imap_module \
