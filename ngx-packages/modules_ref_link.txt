@@ -36,3 +36,6 @@ Link : https://github.com/Lax/ngx_http_accounting_module
 
 + nginx_upstream_check_module
 Link : https://github.com/yaoweibin/nginx_upstream_check_module
+
++ nginx-module-sts/nginx-module-stream-sts
+Link : https://github.com/vozlt/nginx-module-sts
