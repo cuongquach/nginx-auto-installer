@@ -14,5 +14,5 @@ md5-filter-nginx=null
 http-internal-redirect-nginx=0.6
 http-accounting-nginx=1.0
 upstream-check-module=0.3.0
-nginx-module-stream-sts=0.1.1
-nginx-module-sts=0.1.1
+module-nginx-stream-sts=0.1.1
+module-nginx-sts=0.1.1
