@@ -22,19 +22,34 @@ script_working_environment()
     SCRIPT_MODULES_CUSTOM_CONFIG="${SCRIPT_PWD}/ngx-modules-install.conf"
     SCRIPT_CUSTOM_NGINX="${SCRIPT_PWD}/custom"
     SCRIPT_CUSTOM_NGINX_CONFIG="${SCRIPT_CUSTOM_NGINX}/nginx-compiling-custom.sh"
+    SCRIPT_ADDITIONAL_INSTALL="${SCRIPT_CUSTOM_NGINX}/nginx-additional-install.sh"
 
     ## Modules's dir define
     OPENSSL_MODULES="${SCRIPT_MODULE_DIR}/openssl"
     ZLIB_MODULES="${SCRIPT_MODULE_DIR}/zlib"
     PCRE_MODULES="${SCRIPT_MODULE_DIR}/pcre"
 
+    # Additional flag
+    flag_installl_luajt="false"
+
     rm -f ${SCRIPT_LOG_REPORT} ${SCRIPT_CUSTOM_NGINX}
 }
+
+
+script_install_luajt()
+{
+LUAJT_INSTALL_DIR="$1"
+cat <<EOF > ${SCRIPT_ADDITIONAL_INSTALL}
+cd ${LUAJT_INSTALL_DIR}
+make install -j ${number_cpu_core}
+EOF
+}
+
 
 script_template_compiling()
 {
 
-cat <<-'EOF' >> ${SCRIPT_CUSTOM_NGINX_CONFIG}
+cat <<-'EOF' > ${SCRIPT_CUSTOM_NGINX_CONFIG}
 ./configure \
         --user=nginx \
         --group=nginx \
@@ -138,6 +153,36 @@ script_modules_custom_decompress()
                         if [ ! -f "${PACKAGE_PATH}" ];then
                             echo "ERROR.PACKAGE_NOT_EXISTS : ${PACKAGE_PATH}" | tee -a "${SCRIPT_LOG_REPORT}"
                         elif [ -f "${PACKAGE_PATH}" ];then
+
+                            # Special case for compiling nginx with LUA
+                            if [[ ${CUSTOM_PACKAGE_NAME} == "lua-nginx-module" ]] || [[ ${CUSTOM_PACKAGE_NAME} == "stream-lua-nginx-module" ]];then
+
+                                #Prepare LuaJT to install LuaJT
+                                LUAJT_VERSION="$(cat ${SCRIPT_MODULES_LIST} | grep -i "^LuaJIT" | awk -F'=' '{print $2}')"
+                                LUAJT_PACKAGE_PATH="${SCRIPT_PACKAGE_DIR}/LuaJIT-${LUAJT_VERSION}.tar.gz"
+                                LUAJT_PACKAGE_MODULE="${SCRIPT_MODULE_DIR}/LuaJT/"
+                                rm -rf ${LUAJT_PACKAGE_MODULE}
+                                mkdir -p ${LUAJT_PACKAGE_MODULE}
+                                tar xvf ${LUAJT_PACKAGE_PATH} -C ${LUAJT_PACKAGE_MODULE} --strip-components 1 1> /dev/null \
+                                && echo "SUCCESS.PACKAGE_DECOMPRESS : ${LUAJT_PACKAGE_MODULE}" | tee -a "${SCRIPT_LOG_REPORT}" \
+                                || echo "FAILED.PACKAGE_DECOMPRESS : ${LUAJT_PACKAGE_MODULE}" | tee -a "${SCRIPT_LOG_REPORT}"
+
+                                # Create script to install luajt
+                                script_install_luajt ${LUAJT_PACKAGE_MODULE}
+                                flag_installl_luajt="true"
+
+                                #Prepare ngx-devel-kit to compile with nginx source
+                                NGXDEVKIT_VERSION="$(cat ${SCRIPT_MODULES_LIST} | grep -i "^ngx-devel-kit" | awk -F'=' '{print $2}')"
+                                NGXDEVKIT_PACKAGE_PATH="${SCRIPT_PACKAGE_DIR}/ngx-devel-kit-${NGXDEVKIT_VERSION}.tar.gz"
+                                NGXDEVKIT_PACKAGE_MODULE="${SCRIPT_MODULE_DIR}/ngx-devel-kit/"
+                                rm -rf ${NGXDEVKIT_PACKAGE_MODULE}
+                                mkdir -p ${NGXDEVKIT_PACKAGE_MODULE}
+                                tar xvf ${NGXDEVKIT_PACKAGE_PATH} -C ${NGXDEVKIT_PACKAGE_MODULE} --strip-components 1 1> /dev/null \
+                                && echo "SUCCESS.PACKAGE_DECOMPRESS : ${NGXDEVKIT_PACKAGE_MODULE}" | tee -a "${SCRIPT_LOG_REPORT}" \
+                                || echo "FAILED.PACKAGE_DECOMPRESS : ${NGXDEVKIT_PACKAGE_MODULE}" | tee -a "${SCRIPT_LOG_REPORT}"
+                                echo "--add-module=\"../ngx-modules/ngx-devel-kit/\" \\" >> ${SCRIPT_CUSTOM_NGINX_CONFIG}.tmp
+                            fi
+
                             if [ -d ${CUSTOM_PACKAGE_MODULE} ];then
                                 rm -rf ${CUSTOM_PACKAGE_MODULE}
                             fi
@@ -151,6 +196,7 @@ script_modules_custom_decompress()
                             else
                                 echo "--add-module=\"../ngx-modules/${CUSTOM_PACKAGE_NAME}\" \\" >> ${SCRIPT_CUSTOM_NGINX_CONFIG}.tmp
                             fi
+
                         fi
                     fi
                 fi
@@ -190,19 +236,30 @@ script_nginx_installing()
     fi
 
     if [ -f ${SCRIPT_CUSTOM_NGINX_CONFIG} ];then
-            cd ${SCRIPT_COMPILING_DIR}
-            bash ${SCRIPT_CUSTOM_NGINX_CONFIG}
-            make -j ${number_cpu_core}
-            make install -j ${number_cpu_core} \
-                    && echo "SUCCESS.COMPILING_NGINX : nginx" | tee -a "${SCRIPT_LOG_REPORT}" \
-                    || echo "FAILED.COMPILING_NGINX : nginx" | tee -a "${SCRIPT_LOG_REPORT}"
+        # Install adition script first
+        if [ -f ${SCRIPT_ADDITIONAL_INSTALL} ];then
+            bash ${SCRIPT_ADDITIONAL_INSTALL}
+        fi
+        
+        if [[ ${flag_installl_luajt} == "true" ]];then
+            LUAJIT_INC_DIR="$(find /usr/local/include/ -type d -iname "luajit*")"
+            export LUAJIT_LIB=/usr/local/lib
+            export LUAJIT_INC=${LUAJIT_INC_DIR}
+        fi
+
+        cd ${SCRIPT_COMPILING_DIR}
+        bash ${SCRIPT_CUSTOM_NGINX_CONFIG}
+        make -j ${number_cpu_core}
+        make install -j ${number_cpu_core} \
+                && echo "SUCCESS.COMPILING_NGINX : nginx" | tee -a "${SCRIPT_LOG_REPORT}" \
+                || echo "FAILED.COMPILING_NGINX : nginx" | tee -a "${SCRIPT_LOG_REPORT}"
     else
-            cd ${SCRIPT_COMPILING_DIR}
-            bash ${SCRIPT_NGINX_COMPILING}
-            make -j ${number_cpu_core}
-            make install -j ${number_cpu_core} \
-                    && echo "SUCCESS.COMPILING_NGINX : nginx" | tee -a "${SCRIPT_LOG_REPORT}" \
-                    || echo "FAILED.COMPILING_NGINX : nginx" | tee -a "${SCRIPT_LOG_REPORT}"
+        cd ${SCRIPT_COMPILING_DIR}
+        bash ${SCRIPT_NGINX_COMPILING}
+        make -j ${number_cpu_core}
+        make install -j ${number_cpu_core} \
+                && echo "SUCCESS.COMPILING_NGINX : nginx" | tee -a "${SCRIPT_LOG_REPORT}" \
+                || echo "FAILED.COMPILING_NGINX : nginx" | tee -a "${SCRIPT_LOG_REPORT}"
     fi
 
     ## Copying configuration
