@@ -155,7 +155,7 @@ script_modules_custom_decompress()
                         elif [ -f "${PACKAGE_PATH}" ];then
 
                             # Special case for compiling nginx with LUA
-                            if [[ ${CUSTOM_PACKAGE_NAME} == "lua-nginx-module" ]] || [[ ${CUSTOM_PACKAGE_NAME} == "stream-lua-nginx-module" ]];then
+                            if [[ ${flag_installl_luajt} == "false" ]] && [[ ${CUSTOM_PACKAGE_NAME} == "lua-nginx-module" ]] || [[ ${CUSTOM_PACKAGE_NAME} == "stream-lua-nginx-module" ]];then
 
                                 #Prepare LuaJT to install LuaJT
                                 LUAJT_VERSION="$(cat ${SCRIPT_MODULES_LIST} | grep -i "^LuaJIT" | awk -F'=' '{print $2}')"
