@@ -16,3 +16,7 @@ http-accounting-nginx=1.0
 upstream-check-module=0.3.0
 module-nginx-stream-sts=0.1.1
 module-nginx-sts=0.1.1
+lua-nginx-module=0.10.13
+stream-lua-nginx-module=0.0.5
+ngx-devel-kit=0.3.0
+LuaJIT=2.0.5

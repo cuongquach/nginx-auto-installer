@@ -39,3 +39,13 @@ Link : https://github.com/yaoweibin/nginx_upstream_check_module
 
 + nginx-module-sts/nginx-module-stream-sts
 Link : https://github.com/vozlt/nginx-module-sts
+
++ ngx_devel_kit
+Link : https://github.com/simplresty/ngx_devel_kit/
+
++ lua-nginx-module
+Link : https://github.com/openresty/lua-nginx-module/
+
++ stream-lua-nginx-module
+Link : https://github.com/openresty/stream-lua-nginx-module
+
