@@ -169,6 +169,7 @@ script_modules_custom_decompress()
 
                                 # Create script to install luajt
                                 script_install_luajt ${LUAJT_PACKAGE_MODULE}
+                                echo "--with-ld-opt=\"-Wl,-rpath,/usr/local/lib/\" \\" >> ${SCRIPT_CUSTOM_NGINX_CONFIG}.tmp
                                 flag_installl_luajt="true"
 
                                 #Prepare ngx-devel-kit to compile with nginx source
