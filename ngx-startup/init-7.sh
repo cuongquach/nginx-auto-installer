@@ -7,6 +7,7 @@ Type=forking
 PIDFile=/var/run/nginx.pid
 ExecStartPre=/usr/sbin/nginx -t
 ExecStart=/usr/sbin/nginx
+ExecStartPost=/bin/sleep 0.1
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s QUIT $MAINPID
 PrivateTmp=true
