@@ -270,9 +270,9 @@ script_nginx_installing()
 
     # Create startup file
     if [[ $(grep -i "centos" /etc/os-release) || $(grep -i "amazon" /etc/os-release) ]];then
-        if [[ $(grep -i "centos" /etc/os-release) ]];then
+        if [[ $(cat /etc/os-release | grep "^NAME" | grep -i centos) ]];then
             os_version="$(grep "VERSION_ID" /etc/os-release | awk -F'=' '{print $2}' | tr -d '\"')"
-        elif [[ $(grep -i "amazon" /etc/os-release) ]];then
+        elif [[ $(cat /etc/os-release | grep "^NAME" | grep -i amazon) ]];then
             os_version="$(grep "VERSION_ID" /etc/os-release | awk -F'=' '{print $2}' | tr -d '\"')"
             if [[ "${os_version}" == "2" ]];then
                 os_version="7"
