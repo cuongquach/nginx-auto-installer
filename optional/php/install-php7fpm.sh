@@ -42,6 +42,10 @@ mkdir -p ${PHP_DOWNLOAD_DIR}
 wget --no-check-certificate -O php-${PHP_VERSION}.tar.gz "${PHP_DOWNLOAD_URL}"
 tar xvf php-${PHP_VERSION}.tar.gz -C ${PHP_DOWNLOAD_DIR} --strip-components 1 1> /dev/null
 
+# Create user fpm
+groupadd fpm
+useradd -g fpm fpm
+
 # Begin compile PHP7.3
 cd ${PHP_DOWNLOAD_DIR}
 ./configure --prefix=${PHP_INSTALLED_DIR} \
@@ -105,7 +109,9 @@ cp -f ${PHP_DOWNLOAD_DIR}/sapi/fpm/php-fpm.service /etc/systemd/system/php${PHP_
 chmod +x /etc/systemd/system/php${PHP_VERSION}-fpm.service
 
 # Start php-fpm && set startup service
+systemctl daemon-reload
 systemctl enable php${PHP_VERSION}-fpm.service
 systemctl start php${PHP_VERSION}-fpm.service
+systemctl status php${PHP_VERSION}-fpm.service
 
 exit 0
