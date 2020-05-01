@@ -34,7 +34,7 @@ yum install -y wget libcurl* libstdc++44-devel bzip2-devel bzip2 curl-devel curl
 
 # Download Package PHP & Decompress package PHP
 PHP_DOWNLOAD_DIR="/opt/php${PHP_VERSION}"
-PHP_INSTALLED_DIR="/usr/local/${PHP_VERSION}/"
+PHP_INSTALLED_DIR="/usr/local/php${PHP_VERSION}/"
 
 cd /opt/
 rm -rf ${PHP_DOWNLOAD_DIR}
