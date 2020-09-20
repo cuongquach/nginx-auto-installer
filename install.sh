@@ -269,11 +269,14 @@ script_nginx_installing()
     fi
 
     # Create startup file
-    if [[ $(grep -i "centos" /etc/redhat-release) ]];then
-        if [[ $(cat /etc/redhat-release | wc -w) -eq 5 ]];then
-            os_version="$(awk '{print $4}' /etc/redhat-release)"
-        elif [[ $(cat /etc/redhat-release | wc -w) -eq 4 ]];then
-            os_version="$(awk '{print $3}' /etc/redhat-release)"
+    if [[ $(grep -i "centos" /etc/os-release) || $(grep -i "amazon" /etc/os-release) ]];then
+        if [[ $(cat /etc/os-release | grep "^NAME" | grep -i centos) ]];then
+            os_version="$(grep "VERSION_ID" /etc/os-release | awk -F'=' '{print $2}' | tr -d '\"')"
+        elif [[ $(cat /etc/os-release | grep "^NAME" | grep -i amazon) ]];then
+            os_version="$(grep "VERSION_ID" /etc/os-release | awk -F'=' '{print $2}' | tr -d '\"')"
+            if [[ "${os_version}" == "2" ]];then
+                os_version="7"
+            fi
         fi
 
         if [[ $(grep "^6" <<< ${os_version}) ]];then

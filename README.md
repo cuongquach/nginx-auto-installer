@@ -1,13 +1,13 @@
-#Shell script Linux - "nginx-auto-installer"
+# Shell script Linux - "nginx-auto-installer"
 
-##Requirements
+## Requirements
 
 - Script 'nginx-auto-installer'.
 - Privileges to run 'nginx-auto-installer' like root.
 - Git command on system.
 - Installing dependency packages.
 
-##Installation
+## Installation
 
 **+ Linux**
 
@@ -26,7 +26,7 @@ $ chmod +x install.sh
 $ ./install.sh
 ```
 
-##Author
+## Author
 **Name** : Quach Chi Cuong
 
 **Website** : https://cuongquach.com/
