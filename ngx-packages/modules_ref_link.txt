@@ -1,5 +1,8 @@
++ Zlib
+Link: https://zlib.net/
+
 + PCRE
-Link: ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/
+Link: https://ftp.pcre.org/pub/pcre/
 
 + echo
 Link : https://github.com/openresty/echo-nginx-module
