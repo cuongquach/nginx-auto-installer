@@ -1,6 +1,6 @@
-nginx=1.16.1
-openssl=1.0.2o
-pcre=8.42
+nginx=1.18.0
+openssl=1.1.1g
+pcre=8.44
 zlib=1.2.11
 echo=0.61
 modsecurity=2.9.1

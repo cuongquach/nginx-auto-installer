@@ -1,0 +1,13 @@
+# Proxy on HTTP:80
+server
+{
+    listen 128.199.180.196:80;
+    server_name sub.domain.com ;
+    access_log /var/log/nginx/domains/sub.domain.com.log main;
+    error_log /var/log/nginx/vhost_error.log;
+
+    location / {
+    	proxy_pass http://127.0.0.1:8080;
+    	include /etc/nginx/ngx_proxy_params.conf;
+  	}
+}
