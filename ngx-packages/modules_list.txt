@@ -1,4 +1,4 @@
-nginx=1.16.0
+nginx=1.16.1
 openssl=1.0.2o
 pcre=8.42
 zlib=1.2.11
@@ -21,3 +21,4 @@ stream-lua-nginx-module=0.0.5
 ngx-devel-kit=0.3.0
 LuaJIT=2.0.5
 vts-nginx-module=0.1.18
+ngx-security-headers=0.0.9
