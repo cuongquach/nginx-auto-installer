@@ -54,3 +54,6 @@ Link : https://github.com/openresty/stream-lua-nginx-module
 
 + VTS Nginx Module
 Link: https://github.com/vozlt/nginx-module-vts
+
++ Ngx Security Headers
+Link: https://github.com/GetPageSpeed/ngx_security_headers
