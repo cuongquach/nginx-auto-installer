@@ -285,7 +285,7 @@ script_nginx_installing()
             if [[ "${os_version}" == "2" ]];then
                 os_version="7"
             elif [[ "${os_version}" == "2018.03" ]];then
-                of_version="6"
+                os_version="6"
             fi
         fi
 
