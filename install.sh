@@ -100,7 +100,7 @@ script_modules_decompress()
         CUSTOM_PACKAGE_NAME="$(echo ${pkg})"
         CUSTOM_PACKAGE_MODULE="${SCRIPT_MODULE_DIR}/${CUSTOM_PACKAGE_NAME}"
         if [[ $(cat ${SCRIPT_MODULES_LIST} | grep -i "^${CUSTOM_PACKAGE_NAME}" | awk -F'=' '{print $2}') ]];then
-            VERSION_PACKAGE="$(cat ${SCRIPT_MODULES_LIST} | grep -i "^${CUSTOM_PACKAGE_NAME}" | awk -F'=' '{print $2}')"
+            VERSION_PACKAGE="$(cat ${SCRIPT_MODULES_LIST} | grep -i "^${CUSTOM_PACKAGE_NAME}=" | awk -F'=' '{print $2}')"
             PACKAGE_PATH="${SCRIPT_PACKAGE_DIR}/${CUSTOM_PACKAGE_NAME}-${VERSION_PACKAGE}.tar.gz"
 
             if [ ! -f "${PACKAGE_PATH}" ];then
