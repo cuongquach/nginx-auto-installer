@@ -32,7 +32,14 @@ script_working_environment()
     # Additional flag
     flag_installl_luajt="false"
 
-    rm -f ${SCRIPT_LOG_REPORT} ${SCRIPT_CUSTOM_NGINX}
+    # Remove leftover dir/file
+    if [[ -f ${SCRIPT_LOG_REPORT} ]];then
+        rm -f ${SCRIPT_LOG_REPORT}
+    fi
+
+    if [[ -d ${SCRIPT_CUSTOM_NGINX} ]];then
+        rm -rf ${SCRIPT_CUSTOM_NGINX}
+    fi    
 }
 
 
