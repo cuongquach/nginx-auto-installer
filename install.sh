@@ -91,6 +91,7 @@ cat <<-'EOF' > ${SCRIPT_CUSTOM_NGINX_CONFIG}
 EOF
 
 }
+
 script_modules_decompress()
 {
     LIBRARY_ARRAY=("nginx" "openssl" "zlib" "pcre")
@@ -276,6 +277,8 @@ script_nginx_installing()
             os_version="$(grep "VERSION_ID" /etc/os-release | awk -F'=' '{print $2}' | tr -d '\"')"
             if [[ "${os_version}" == "2" ]];then
                 os_version="7"
+            elif [[ "${os_version}" == "2018.03" ]];then
+                of_version="6"
             fi
         fi
 
@@ -327,8 +330,6 @@ script_nginx_installing()
 
 if [[ "$(id -u)" != "0" ]];then
     echo "- This script must be run as root" 1>&2
-    echo
-    echo "+ From: CuongQuach.com"
     exit 1
 fi
 
