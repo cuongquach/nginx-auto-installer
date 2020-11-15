@@ -55,5 +55,8 @@ Link : https://github.com/openresty/stream-lua-nginx-module
 + VTS Nginx Module
 Link: https://github.com/vozlt/nginx-module-vts
 
++ nginx_cookie_flag_module
+Link: https://github.com/AirisX/nginx_cookie_flag_module
+
 + Ngx Security Headers
 Link: https://github.com/GetPageSpeed/ngx_security_headers
