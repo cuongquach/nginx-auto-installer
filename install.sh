@@ -271,6 +271,10 @@ script_nginx_installing()
                 || echo "FAILED.COMPILING_NGINX : nginx" | tee -a "${SCRIPT_LOG_REPORT}"
     fi
 
+    ## Re-config permission for dir nginx cache
+    chmod 755 /var/cache/nginx
+    find /var/cache/nginx -type d -exec chmod 755 {} \;
+
     ## Copying configuration
     if [ -d /etc/nginx/ ];then
         cp -rf ${SCRIPT_ETC_DIR}/* /etc/nginx/
