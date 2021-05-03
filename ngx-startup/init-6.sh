@@ -21,6 +21,7 @@
 
 nginx="/usr/sbin/nginx"
 prog=$(basename $nginx)
+pidfile="/var/run/${prog}.pid"
 
 NGINX_CONF_FILE="/etc/nginx/nginx.conf"
 
@@ -100,6 +101,20 @@ rh_status_q() {
     rh_status >/dev/null 2>&1
 }
 
+configtest_q() {
+    $nginx -t -q -c $NGINX_CONF_FILE
+}
+
+# Tell nginx to reopen logs
+reopen_logs() {
+    configtest_q || return 6
+    echo -n $"Reopening $prog logs: "
+    killproc -p $pidfile $prog -USR1
+    retval=$?
+    echo
+    return $retval
+}
+
 case "$1" in
     start)
         rh_status_q && exit 0
@@ -109,7 +124,7 @@ case "$1" in
         rh_status_q || exit 0
         $1
         ;;
-    restart|configtest)
+    restart|configtest|reopen_logs)
         $1
         ;;
     reload)
@@ -126,6 +141,6 @@ case "$1" in
         rh_status_q || exit 0
             ;;
     *)
-        echo $"Usage: $0 {start|stop|status|restart|condrestart|try-restart|reload|force-reload|configtest}"
+        echo $"Usage: $0 {start|stop|status|restart|condrestart|try-restart|reload|force-reload|configtest|reopen_logs}"
         exit 2
 esac
