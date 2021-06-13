@@ -7,7 +7,7 @@
 PHP_VERSION="$1"
 
 if [[ -z "${PHP_VERSION}" ]];then
-    echo "[+] Please input PHP Version : (7.2/7.3)"
+    echo "[+] Please input PHP Version : (7.2/7.3/7.4)"
     exit 1
 fi
 
@@ -16,6 +16,8 @@ if [[ "${PHP_VERSION}" == "7.2" ]];then
     PHP_DOWNLOAD_URL="https://www.php.net/distributions/php-7.2.30.tar.gz"
 elif [[ "${PHP_VERSION}" == "7.3" ]];then
     PHP_DOWNLOAD_URL="https://www.php.net/distributions/php-7.3.17.tar.gz"
+elif [[ "${PHP_VERSION}" == "7.4" ]];then
+    PHP_DOWNLOAD_URL="https://www.php.net/distributions/php-7.4.20.tar.gz"
 else
     echo "[x] No support input PHP Version: $PHP_VERSION. Exit."
     exit 1
@@ -23,6 +25,7 @@ fi
 
 
 #Install packages dependencies
+yum groupinstall "Development Tools"
 yum install -y wget libcurl* libstdc++44-devel bzip2-devel bzip2 curl-devel curl libpng-devel libpng readline-devel db4-devel freetype-devel libXpm-devel gmp-devel libc-client-devel openldap-devel unixODBC-devel postgresql-devel sqlite-devel aspell-devel net-snmp-devel net-snmp libxslt-devel libxml2-devel pcre-devel t1lib-devel.x86_64 libmcrypt-devel.x86_64 libtidy libtidy-devel libjpeg-devel libjpeg8-dev mysql-devel libicu-devel recode-devel zlib zlib-devel openssl openssl-devel pcre pcre-devel enchant enchant-devel libzip-devel
 
 
