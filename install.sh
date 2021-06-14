@@ -311,7 +311,26 @@ script_nginx_installing()
             if [[ -f /lib/systemd/system/nginx.service ]];then
                 rm -f /lib/systemd/system/nginx.service
             fi
-            cp -f ${SCRIPT_STARTUP_DIR}/init-7.sh /lib/systemd/system/nginx.service
+            cp -f ${SCRIPT_STARTUP_DIR}/systemd.sh /lib/systemd/system/nginx.service
+            chmod +x /lib/systemd/system/nginx.service
+
+            #Start service Nginx and set startup service
+            systemctl enable nginx.service
+            systemctl stop nginx.service
+            systemctl start nginx.service
+        fi
+    elif [[ $(grep -i "ubuntu" /etc/os-release) ]];then
+        os_version="$(grep "VERSION_ID" /etc/os-release | awk -F'=' '{print $2}' | tr -d '\"')"
+        if [[ "${os_version}" == "20.04" ]];then
+            os_startup_type="systemd"
+        fi
+
+        if [[ "${os_startup_type}" == "systemd" ]];then
+            # Remove current init script Nginx service
+            if [[ -f /lib/systemd/system/nginx.service ]];then
+                rm -f /lib/systemd/system/nginx.service
+            fi
+            cp -f ${SCRIPT_STARTUP_DIR}/systemd.sh /lib/systemd/system/nginx.service
             chmod +x /lib/systemd/system/nginx.service
 
             #Start service Nginx and set startup service
